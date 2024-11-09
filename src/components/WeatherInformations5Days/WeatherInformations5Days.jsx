@@ -4,9 +4,49 @@ import "./WeatherInformations5Days.css";
 function WeatherInformations5Days({ weather5Days }) {
   console.log(weather5Days);
 
+  let daylyForecast = {};
+
+  for (let forecast of weather5Days.list) {
+    const date = new Date(forecast.dt * 1000).toLocaleDateString();
+
+    if (!daylyForecast[date]) {
+      daylyForecast[date] = forecast;
+    }
+  }
+
+  const next5DaysForecast = Object.values(daylyForecast).slice(0, 5);
+
+  function convertDate(date) {
+    const newDate = new Date(date.dt * 1000).toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+    });
+    console.log(newDate);
+
+    return newDate;
+  }
+
   return (
     <div className="weather-container">
-      <p>5 days</p>
+      <h3>Previsão Próximos 5 Dias</h3>
+      <div className="weather-list">
+        {next5DaysForecast.map((forecast) => (
+          <div key={forecast.dt} className="weather-item">
+            <p className="forecast-day">{convertDate(forecast)}</p>
+            <img
+              src={`https://openweathermap.org/img/wn/${forecast.weather[0].icon}@2x.png`}
+            />
+            <p className="forecast-description">
+              {forecast.weather[0].description}
+            </p>
+            <p>
+              {Math.round(forecast.main.temp_min)}&deg;C min /
+              {Math.round(forecast.main.temp_max)}&deg;C máx
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
